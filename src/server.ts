@@ -2,8 +2,10 @@ import app from "./app";
 import { port } from "./config/config";
 import connectDB from "./config/db";
 
-connectDB()
+connectDB();
 
-app.listen(port , () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server Running on http://localhost:${port}`);
+// });
+
+export default app;
