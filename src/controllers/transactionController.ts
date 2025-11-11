@@ -1,18 +1,36 @@
 import { Request, Response } from "express";
-import { addTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService } from "../services/transactionService";
+import {
+  addTransactionService,
+  deleteTransactionService,
+  getAllTransactionService,
+  getAllUserTransactionService,
+  getTransactionByIdService,
+} from "../services/transactionService";
 
-export const getAllTransactionController = async (req: Request, res: Response) => {
+export const getAllTransactionController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const transactions = await getAllTransactionService();
+    if (!req.userId) {
+      return res.status(401).json({ message: "User ID tidak ditemukan" });
+    }
+    const transactions = await getAllUserTransactionService(req.userId);
     res.json(transactions);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getTransactionByIdController = async (req: Request, res: Response) => {
+export const getTransactionByIdController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const transaction = await getTransactionByIdService(req.params.id);
+    const transaction = await getTransactionByIdService(
+      req.params.id,
+      req.userId
+    );
     if (!transaction) {
       return res.status(404).json({ message: "Transaksi tidak ditemukan" });
     }
@@ -23,23 +41,30 @@ export const getTransactionByIdController = async (req: Request, res: Response) 
 };
 
 export const addTransactionController = async (req: Request, res: Response) => {
-    const data = {
-        description: req.body.description,
-        nominal: req.body.nominal,
-        category: req.body.category
-    }
-    console.log(data)
+  const data = {
+    userId: req.userId,
+    description: req.body.description,
+    nominal: req.body.nominal,
+    category: req.body.category,
+  };
+  console.log(data);
   try {
-    const newTransaction = await addTransactionService({...data});
+    const newTransaction = await addTransactionService({ ...data });
     res.status(201).json(newTransaction);
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
 };
 
-export const updateTransactionController = async (req: Request, res: Response) => {
+export const updateTransactionController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const transaction = await getTransactionByIdService(req.params.id);
+    const transaction = await getTransactionByIdService(
+      req.params.id,
+      req.userId
+    );
     if (!transaction) {
       return res.status(404).json({ message: "Transaksi tidak ditemukan" });
     }
@@ -55,9 +80,15 @@ export const updateTransactionController = async (req: Request, res: Response) =
   }
 };
 
-export const deleteTransactionController = async (req: Request, res: Response) => {
+export const deleteTransactionController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const transaction = await getTransactionByIdService(req.params.id);
+    const transaction = await getTransactionByIdService(
+      req.params.id,
+      req.userId
+    );
     if (!transaction) {
       return res.status(404).json({ message: "Transaksi tidak ditemukan" });
     }

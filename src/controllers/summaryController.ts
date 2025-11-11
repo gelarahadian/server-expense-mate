@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
-import { getAllTransactionService } from "../services/transactionService";
+import {
+  getAllTransactionService,
+  getAllUserTransactionService,
+} from "../services/transactionService";
 
 export const calculateTotalBalance = async (req: Request, res: Response) => {
   try {
-    const transactions = await getAllTransactionService();
+    const transactions = await getAllUserTransactionService(req.userId);
 
     const pemasukan = transactions
       .filter((t) => t.category === "Income")

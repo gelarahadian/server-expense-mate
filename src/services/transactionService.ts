@@ -1,22 +1,37 @@
 import Transaction from "../models/transactionModel";
 
 export const getAllTransactionService = async () => {
-    return await Transaction.find().sort({ tanggal: -1 });
-}
+  return await Transaction.find().sort({ date: -1 });
+};
 
-export const getTransactionByIdService = async (id: string) => {
-    return await Transaction.findById(id);
-}
+export const getAllUserTransactionService = async (userId: string) => {
+  return await Transaction.find({ userId: userId }).sort({ date: -1 });
+};
 
-export const addTransactionService = async ({description, nominal, category}: {description: string; nominal: number; category: string;}) => {
-    const transaction = new Transaction({
-      description: description,
-      nominal: nominal,
-      category: category,
-    });
+export const getTransactionByIdService = async (id: string, userId: string) => {
+  return await Transaction.findOne({ _id: id, userId });
+};
 
-    return await transaction.save();
-}
+export const addTransactionService = async ({
+  userId,
+  description,
+  nominal,
+  category,
+}: {
+  userId: string;
+  description: string;
+  nominal: number;
+  category: string;
+}) => {
+  const transaction = new Transaction({
+    userId,
+    description: description,
+    nominal: nominal,
+    category: category,
+  });
+
+  return await transaction.save();
+};
 
 export const deleteTransactionService = async (id: string) => {
     return await Transaction.findByIdAndDelete(id);
